@@ -55,8 +55,12 @@ public class Main {
                         input.nextLine();
                     }
                     case 0 -> {
-                        System.out.println("Obrigado pela preferência!");
-                        System.exit(0);
+                        System.out.println("Deseja sair? Digite 's' para confirmar: ");
+                        opcao_escolhida = input.nextLine();
+                        if (opcao_escolhida.equalsIgnoreCase("s")) {
+                            System.out.println("Obrigado pela preferência!");
+                            System.exit(0);
+                        }
                     }
                     default -> throw new Exception();
                 }
@@ -76,6 +80,7 @@ public class Main {
 
         Scanner input = new Scanner(System.in);
 
+        boolean encerrar = false;
         while(opcao != 0){
             boolean vez_jogador = jogo_atual.isVez_jogador();
             // se for true pega a mao do P1 se for false pega a do P2
@@ -109,7 +114,8 @@ public class Main {
 
                         if (!(escolha_lado.equals("e") || escolha_lado.equals("d")))  throw new Exception();
 
-                        jogo_atual.jogar_peca(peca_escolhida, escolha_lado);
+                        encerrar = jogo_atual.jogar_peca(peca_escolhida, escolha_lado);
+
                     }
                     case 2 -> {
                         jogo_atual.comprar_peca();
@@ -118,8 +124,12 @@ public class Main {
                         jogo_atual.passar_vez();
                     }
                     case 0 -> {
-                        System.out.println("Voltando ao menu principal!");
-                        opcao = 0;
+                        System.out.println("Deseja sair? Digite 's' para confirmar: ");
+                        opcao_escolhida = input.nextLine();
+                        if (opcao_escolhida.equalsIgnoreCase("s")) {
+                            System.out.println("Voltando ao menu principal!");
+                            opcao = 0;
+                        }
                     }
                     default -> throw new Exception();
                 }
@@ -127,6 +137,7 @@ public class Main {
                 System.out.println("Opção inválida! Tente novamente!\n\n");
                 opcao = -1;
             }
+            if (encerrar) break;
         }
     }
 

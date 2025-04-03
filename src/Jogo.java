@@ -111,12 +111,12 @@ public class Jogo {
         return maiorDuplo;
     }
 
-    public void jogar_peca(int id_peca, String lado) {
+    public boolean jogar_peca(int id_peca, String lado) {
         ArrayList<Domino> mao_atual = vez_jogador ? MJ1 : MJ2;
 
         if (id_peca < 0 || id_peca >= mao_atual.size()) {
             System.out.println("Índice inválido! Escolha uma peça válida.");
-            return;
+            return false;
         }
 
         Domino peca = mao_atual.get(id_peca);
@@ -153,7 +153,7 @@ public class Jogo {
             System.out.println("Jogada inválida! Escolha outra peça ou compre uma.\n");
         }
 
-        verificar_fim();
+        return verificar_fim();
     }
 
     public void comprar_peca(){
