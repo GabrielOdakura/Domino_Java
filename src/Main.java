@@ -23,7 +23,31 @@ public class Main {
                         menu_jogo();
                     }
                     case 2 -> {
-                        System.out.println("WIP\nDigite enter para sair");
+                        System.out.println("""
+                            
+                            
+                                   ========================================
+                                                REGRAS DO DOMINÓ
+                                   ========================================
+                           \s
+                           1. O jogo começa com um jogador colocando uma peça na mesa.
+                           2. Os jogadores devem colocar peças que tenham um dos lados\s
+                              correspondentes a uma extremidade do tabuleiro.
+                           3. Se um jogador não puder jogar, ele deve comprar uma peça\s
+                              do monte.
+                           4. Se não houver mais peças para comprar e o jogador não\s
+                              puder jogar, ele deve passar a vez.
+                           5. O jogo termina quando um jogador jogar todas as suas\s
+                              peças ou quando o jogo estiver travado.
+                           6. Se o jogo travar, o jogador com a menor soma de pontos\s
+                              em suas peças vence.
+                           7. Se houver empate na soma de pontos, o jogo termina\s
+                              empatado.
+                        
+                           Digite enter para fechar este menu!
+                           =============================
+                            
+                            """);
                         input.nextLine();
                     }
                     case 3 -> {
@@ -75,9 +99,17 @@ public class Main {
                 opcao = Integer.parseInt(opcao_escolhida);
                 switch(opcao) {
                     case 1 -> {
-                        System.out.println("WIP\nDigite enter para sair");
-                        input.nextLine();
-                        //jogo_atual.jogar_peca();
+                        System.out.println("Digite a peça desejada para jogar:");
+                        String escolha_peca = input.nextLine();
+
+                        int peca_escolhida = Integer.parseInt(escolha_peca);
+
+                        System.out.println("Digite o lado para jogar ('e' ou 'd'):");
+                        String escolha_lado = input.nextLine();
+
+                        if (!(escolha_lado.equals("e") || escolha_lado.equals("d")))  throw new Exception();
+
+                        jogo_atual.jogar_peca(peca_escolhida, escolha_lado);
                     }
                     case 2 -> {
                         jogo_atual.comprar_peca();
