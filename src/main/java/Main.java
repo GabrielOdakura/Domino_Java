@@ -27,7 +27,7 @@ public class Main {
                         input.nextLine();
                     }
                     case 3 -> {
-                        TestesAceitacao.executarTestesDeAceitacao();
+                        //TestesAceitacao.executarTestesDeAceitacao();
                         input.nextLine();  // espera o usuário apertar enter
                     }
                     case 0 -> {

@@ -188,14 +188,10 @@ public class Jogo {
         if(MJ1.isEmpty()){
             estado_partida = 2;
             System.out.println("Jogador 1 Ganhou!");
-            System.out.println("Aperte enter para finalizar!");
-            input.nextLine();
             return true;
         }else if(MJ2.isEmpty()){
             estado_partida = 2;
             System.out.println("Jogador 2 Ganhou!");
-            System.out.println("Aperte enter para finalizar!");
-            input.nextLine();
             return true;
         }
 
@@ -268,5 +264,25 @@ public class Jogo {
 
     public int getPAD() {
         return PAD;
+    }
+
+    public void setMJ1(ArrayList<Domino> MJ1) {
+        this.MJ1 = MJ1;
+    }
+
+    public void setMJ2(ArrayList<Domino> MJ2) {
+        this.MJ2 = MJ2;
+    }
+
+    public void setVez_jogador(boolean vez_jogador) {
+        this.vez_jogador = vez_jogador;
+    }
+
+    public void setPAE(int PAE) {
+        this.PAE = PAE;
+    }
+
+    public void setPAD(int PAD) {
+        this.PAD = PAD;
     }
 }
