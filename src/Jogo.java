@@ -11,16 +11,16 @@ public class Jogo {
     private ArrayList<Domino> MJ1 = new ArrayList<>();
     private ArrayList<Domino> MJ2 = new ArrayList<>();
 
-    private ArrayList<Domino> pecas_mesa = new ArrayList<>();
+    ArrayList<Domino> pecas_mesa = new ArrayList<>();
 
     // determina a vez do jogador. true = P1 | False = P2
-    private boolean vez_jogador = true;
+    boolean vez_jogador = true;
     private boolean ja_comprou = false;
 
     private ArrayList<Domino> pecas_restantes;
 
-    private int PAE;
-    private int PAD;
+    public int PAE;
+    public int PAD;
 
     // 0 = não iniciada | 1 = em andamento | 2 = finalizado | 3 = empate
     private int estado_partida = 0;
@@ -252,6 +252,10 @@ public class Jogo {
 
     public ArrayList<Domino> getMJ1() {
         return MJ1;
+    }
+
+    public ArrayList<Domino> getPecasRestantes() {
+        return pecas_restantes;
     }
 
     public boolean isVez_jogador() {

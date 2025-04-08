@@ -5,54 +5,30 @@ public class Main {
     public static void main(String[] args) {
         int opcao = -1;
         Scanner input = new Scanner(System.in);
-        while(opcao != 0){
+        while (opcao != 0) {
             System.out.print("""
                     Bem vindo ao Dominó Virtual!
                     1 - Começar Jogo
                     2 - Regras
-                    3 - X
+                    3 - Testes de Aceitação
                     0 - Sair do Jogo
                     Digite a opção desejada:
                     """);
             String opcao_escolhida = input.nextLine();
-            try{
+            try {
                 opcao = Integer.parseInt(opcao_escolhida);
-                switch(opcao) {
+                switch (opcao) {
                     case 1 -> {
                         System.out.println("\n\n");
                         menu_jogo();
                     }
                     case 2 -> {
-                        System.out.println("""
-                            
-                            
-                                   ========================================
-                                                REGRAS DO DOMINÓ
-                                   ========================================
-                           \s
-                           1. O jogo começa com um jogador colocando uma peça na mesa.
-                           2. Os jogadores devem colocar peças que tenham um dos lados\s
-                              correspondentes a uma extremidade do tabuleiro.
-                           3. Se um jogador não puder jogar, ele deve comprar uma peça\s
-                              do monte.
-                           4. Se não houver mais peças para comprar e o jogador não\s
-                              puder jogar, ele deve passar a vez.
-                           5. O jogo termina quando um jogador jogar todas as suas\s
-                              peças ou quando o jogo estiver travado.
-                           6. Se o jogo travar, o jogador com a menor soma de pontos\s
-                              em suas peças vence.
-                           7. Se houver empate na soma de pontos, o jogo termina\s
-                              empatado.
-                        
-                           Digite enter para fechar este menu!
-                           =============================
-                            
-                            """);
+                        System.out.println("REGRAS DO DOMINÓ...");
                         input.nextLine();
                     }
                     case 3 -> {
-                        System.out.println("WIP\nDigite enter para sair");
-                        input.nextLine();
+                        TestesAceitacao.executarTestesDeAceitacao();
+                        input.nextLine();  // espera o usuário apertar enter
                     }
                     case 0 -> {
                         System.out.println("Deseja sair? Digite 's' para confirmar: ");
@@ -64,7 +40,7 @@ public class Main {
                     }
                     default -> throw new Exception();
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
                 System.out.println("Opção inválida! Tente novamente!\n\n");
                 opcao = -1;
             }
@@ -155,6 +131,10 @@ public class Main {
             }
         }
 
+
+
         return output.toString();
     }
+
+
 }
