@@ -7,121 +7,115 @@ public class Jogo {
     // lista contendo todos os dominos
     private ArrayList<Domino> dominos = new ArrayList<>();
 
-    // dominos nas mãos de cada jogador
-    private ArrayList<Domino> MJ1 = new ArrayList<>();
-    private ArrayList<Domino> MJ2 = new ArrayList<>();
+    // jogadores da partida
+    private Jogador jogador1 = new Jogador(1);
+    private Jogador jogador2 = new Jogador(2);
 
-    private ArrayList<Domino> pecas_mesa = new ArrayList<>();
+    // peças que já foram jogadas e estão sobre a mesa
+    ArrayList<Domino> pecas_mesa = new ArrayList<>();
 
-    // determina a vez do jogador. true = P1 | False = P2
+    // determina a vez do jogador. true = P1 | false = P2
     private boolean vez_jogador = true;
+
+    // evita que o jogador compre mais de uma vez no mesmo turno
     private boolean ja_comprou = false;
 
+    // peças restantes para comprar
     private ArrayList<Domino> pecas_restantes;
 
-    private int PAE;
-    private int PAD;
+    // valores nas pontas da mesa (esquerda e direita)
+    public int PAE;
+    public int PAD;
 
     // 0 = não iniciada | 1 = em andamento | 2 = finalizado | 3 = empate
     private int estado_partida = 0;
 
-    public Jogo(){
-        // inicialização das peças
+    public Jogo() {
+        // inicialização das peças (28 peças de 0 a 6)
         for (int i = 0; i <= 6; i++) {
             for (int j = i; j <= 6; j++) {
-                this.dominos.add(new Domino(i, j));
+                dominos.add(new Domino(i, j));
             }
         }
     }
 
-    public void comecar_jogo(){
+    public void comecar_jogo() {
         // embaralha as peças
         Collections.shuffle(dominos);
         pecas_restantes = new ArrayList<>(dominos);
 
-        // inicializa a mão de cada jogador
+        // distribui 6 peças para cada jogador
         for (int i = 0; i < 6; i++) {
-            MJ1.add(dominos.get(i));
-            MJ2.add(dominos.get(i + 6));
+            jogador1.adicionarPeca(dominos.get(i));
+            jogador2.adicionarPeca(dominos.get(i + 6));
         }
 
-        // remove as peças que já foram escolhidas em MJ1 e MJ2
-        pecas_restantes.removeAll(MJ1);
-        pecas_restantes.removeAll(MJ2);
-
-        /* // debug
-        System.out.println("MJ1: " + MJ1);
-        System.out.println("MJ2: " + MJ2);
-        System.out.println("Peças restantes: " + pecas_restantes);
-        */
+        // remove as peças que já foram escolhidas
+        pecas_restantes.removeAll(jogador1.getMao());
+        pecas_restantes.removeAll(jogador2.getMao());
 
         estado_partida = 1;
 
+        // define quem começa a partida
         Domino remover_peca = determinarQuemComeca();
 
-        MJ1.remove(remover_peca);
-        MJ2.remove(remover_peca);
+        // remove a peça inicial das mãos dos jogadores e do monte
+        jogador1.getMao().remove(remover_peca);
+        jogador2.getMao().remove(remover_peca);
         pecas_restantes.remove(remover_peca);
     }
 
     private Domino determinarQuemComeca() {
-        Domino maiorMJ1 = encontrarMaiorDuplo(MJ1);
-        Domino maiorMJ2 = encontrarMaiorDuplo(MJ2);
+        Domino maiorMJ1 = encontrarMaiorDuplo(jogador1.getMao());
+        Domino maiorMJ2 = encontrarMaiorDuplo(jogador2.getMao());
 
-        Domino peca_escolhida = null;
+        Domino peca_escolhida;
 
         if (maiorMJ1 == null && maiorMJ2 == null) {
             System.out.println("Nenhum jogador tem uma peça dupla. Escolha aleatória.");
             peca_escolhida = pecas_restantes.get(0);
-            System.out.println("Peça escolhida: " + peca_escolhida);
-
-            // colocando a primeira peca no lugar
-            PAE = peca_escolhida.get_e(); PAD = peca_escolhida.get_d();
         } else if (maiorMJ1 != null && (maiorMJ2 == null || maiorMJ1.get_e() > maiorMJ2.get_e())) {
             System.out.println("P1 começa com " + maiorMJ1);
             peca_escolhida = maiorMJ1;
-
-            // colocando a primeira peca no lugar
-            PAE = peca_escolhida.get_e(); PAD = peca_escolhida.get_d();
-
-            // troca a vez do jogador pq ele acabou de jogar
-            vez_jogador = false;
+            vez_jogador = false; // jogador 1 já jogou
         } else {
             System.out.println("P2 começa com " + maiorMJ2);
             peca_escolhida = maiorMJ2;
-
-            // colocando a primeira peca no lugar
-            PAE = peca_escolhida.get_e(); PAD = peca_escolhida.get_d();
-
-            // troca a vez do jogador pq ele acabou de jogar
-            vez_jogador = true;
+            vez_jogador = true; // jogador 2 já jogou
         }
+
+        // define pontas da mesa
+        PAE = peca_escolhida.get_e();
+        PAD = peca_escolhida.get_d();
+        pecas_mesa.add(peca_escolhida);
+
         return peca_escolhida;
     }
 
+    // retorna a maior peça dupla de uma mão (ou null se não houver)
     private Domino encontrarMaiorDuplo(ArrayList<Domino> mao) {
         Domino maiorDuplo = null;
         for (Domino d : mao) {
-            if (d.isIgual()) {
-                if (maiorDuplo == null || d.get_e() > maiorDuplo.get_e()) {
-                    maiorDuplo = d;
-                }
+            if (d.isIgual() && (maiorDuplo == null || d.get_e() > maiorDuplo.get_e())) {
+                maiorDuplo = d;
             }
         }
         return maiorDuplo;
     }
 
+    // jogador tenta jogar uma peça em um dos lados
     public boolean jogar_peca(int id_peca, String lado) {
-        ArrayList<Domino> mao_atual = vez_jogador ? MJ1 : MJ2;
+        Jogador jogadorAtual = vez_jogador ? jogador1 : jogador2;
 
-        if (id_peca < 0 || id_peca >= mao_atual.size()) {
+        if (id_peca < 0 || id_peca >= jogadorAtual.getMao().size()) {
             System.out.println("Índice inválido! Escolha uma peça válida.");
             return false;
         }
 
-        Domino peca = mao_atual.get(id_peca);
+        Domino peca = jogadorAtual.getPeca(id_peca);
         boolean jogada_valida = false;
 
+        // tentativa de jogar na esquerda
         if (lado.equals("e")) {
             if (peca.get_d() == PAE) {
                 PAE = peca.get_e();
@@ -132,7 +126,9 @@ public class Jogo {
                 pecas_mesa.add(0, peca);
                 jogada_valida = true;
             }
-        } else if (lado.equals("d")) {
+        }
+        // tentativa de jogar na direita
+        else if (lado.equals("d")) {
             if (peca.get_e() == PAD) {
                 PAD = peca.get_d();
                 pecas_mesa.add(peca);
@@ -145,7 +141,7 @@ public class Jogo {
         }
 
         if (jogada_valida) {
-            mao_atual.remove(id_peca);
+            jogadorAtual.getMao().remove(id_peca);
             ja_comprou = false;
             vez_jogador = !vez_jogador;
             System.out.println("Peça jogada com sucesso!\n");
@@ -156,54 +152,45 @@ public class Jogo {
         return verificar_fim();
     }
 
-    public void comprar_peca(){
-        if(vez_jogador){
-            if(!ja_comprou) {
-                if(!pecas_restantes.isEmpty()){
-                    Domino peca_comprar = pecas_restantes.get(0);
-                    MJ1.add(peca_comprar);
-                    pecas_restantes.remove(0);
-                }else System.out.println("Não existem mais peças pra comprar!\n");
-            }else System.out.println("\nPeça já comprada nesse turno!");
+    // jogador compra uma peça do monte
+    public void comprar_peca() {
+        Jogador jogadorAtual = vez_jogador ? jogador1 : jogador2;
+
+        if (!ja_comprou) {
+            if (!pecas_restantes.isEmpty()) {
+                Domino peca = pecas_restantes.remove(0);
+                jogadorAtual.adicionarPeca(peca);
+            } else {
+                System.out.println("Não existem mais peças pra comprar!\n");
+            }
             ja_comprou = true;
-        }else{
-            if(!ja_comprou) {
-                if(!pecas_restantes.isEmpty()){
-                    Domino peca_comprar = pecas_restantes.get(0);
-                    MJ2.add(peca_comprar);
-                    pecas_restantes.remove(0);
-                }else System.out.println("Não existem mais peças pra comprar!\n");
-            }else System.out.println("\nPeça já comprada nesse turno!");
-            ja_comprou = true;
+        } else {
+            System.out.println("\nPeça já comprada nesse turno!");
         }
     }
 
-    public void passar_vez(){
+    // jogador decide passar sua vez
+    public void passar_vez() {
         vez_jogador = !vez_jogador;
         ja_comprou = false;
     }
 
-    private boolean verificar_fim(){
-        Scanner input = new Scanner(System.in);
-        if(MJ1.isEmpty()){
+    // verifica se o jogo acabou por vitória ou empate
+    private boolean verificar_fim() {
+        if (jogador1.maoVazia()) {
             estado_partida = 2;
             System.out.println("Jogador 1 Ganhou!");
-            System.out.println("Aperte enter para finalizar!");
-            input.nextLine();
             return true;
-        }else if(MJ2.isEmpty()){
+        } else if (jogador2.maoVazia()) {
             estado_partida = 2;
             System.out.println("Jogador 2 Ganhou!");
-            System.out.println("Aperte enter para finalizar!");
-            input.nextLine();
             return true;
         }
 
-        // checa se o jogo tem algum movimento possível
+        // checa se o jogo travou (nenhum pode jogar)
         if (verif_trava()) {
-            // Calcula pontos
-            int somaP1 = calcularSomaPecas(MJ1);
-            int somaP2 = calcularSomaPecas(MJ2);
+            int somaP1 = jogador1.calcularSomaPecas();
+            int somaP2 = jogador2.calcularSomaPecas();
 
             System.out.println("Jogo travado!");
             if (somaP1 < somaP2) {
@@ -214,7 +201,7 @@ public class Jogo {
                 System.out.println("MJ2 ganha com menos pontos: " + somaP2);
             } else {
                 estado_partida = 3;
-                System.out.println("É um empate! Ambos jogadores tem " + somaP1 + " pontos.");
+                System.out.println("É um empate! Ambos jogadores têm " + somaP1 + " pontos.");
             }
             return true;
         }
@@ -222,36 +209,33 @@ public class Jogo {
         return false;
     }
 
+    // verifica se alguma peça pode ser jogada
     private boolean verif_trava() {
-        for (Domino d : MJ1) {
+        for (Domino d : jogador1.getMao()) {
             if (podeJogar(d)) return false;
         }
-        for (Domino d : MJ2) {
+        for (Domino d : jogador2.getMao()) {
             if (podeJogar(d)) return false;
         }
         return true;
     }
 
-    // no evento de dar um empate calcula as somas das mãos do jogador
-    private int calcularSomaPecas(ArrayList<Domino> mao) {
-        int soma = 0;
-        for (Domino d : mao) {
-            soma += d.get_e() + d.get_d();
-        }
-        return soma;
-    }
-
-    // se a peça pode ser inserida em um dos dois lados do tabuleiro, ela vai retornar true, caso não, retorna false.
+    // se a peça pode ser inserida em um dos dois lados do tabuleiro, retorna true
     private boolean podeJogar(Domino d) {
         return (d.get_d() == PAD || d.get_e() == PAE || d.get_d() == PAE || d.get_e() == PAD);
     }
 
-    public ArrayList<Domino> getMJ2() {
-        return MJ2;
+    // Getters úteis
+    public Jogador getJogador1() {
+        return jogador1;
     }
 
-    public ArrayList<Domino> getMJ1() {
-        return MJ1;
+    public Jogador getJogador2() {
+        return jogador2;
+    }
+
+    public ArrayList<Domino> getPecasRestantes() {
+        return pecas_restantes;
     }
 
     public boolean isVez_jogador() {
@@ -264,5 +248,18 @@ public class Jogo {
 
     public int getPAD() {
         return PAD;
+    }
+
+    // Setters caso precise manipular fora da classe
+    public void setPAE(int PAE) {
+        this.PAE = PAE;
+    }
+
+    public void setPAD(int PAD) {
+        this.PAD = PAD;
+    }
+
+    public void setVez_jogador(boolean vez_jogador) {
+        this.vez_jogador = vez_jogador;
     }
 }
