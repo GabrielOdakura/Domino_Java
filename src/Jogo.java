@@ -262,4 +262,10 @@ public class Jogo {
     public void setVez_jogador(boolean vez_jogador) {
         this.vez_jogador = vez_jogador;
     }
+
+    public ArrayList<Domino> getPecasMesa() {
+        return pecas_mesa;
+    }
+
+
 }

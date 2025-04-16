@@ -27,29 +27,14 @@ public class TestesAceitacao {
 
             System.out.println();
             switch (escolha) {
-                case 1:
-                    testeDistribuicaoAleatoria();
-                    break;
-                case 2:
-                    testeGeracao28Pecas();
-                    break;
-                case 3:
-                    testeIdentificacaoJogadorInicial();
-                    break;
-                case 4:
-                    testeExibicaoPecas();
-                    break;
-                case 5:
-                    testeJogadaValida();
-                    break;
-                case 6:
-                    testeFimDeJogo();
-                    break;
-                case 0:
-                    System.out.println("Retornando ao menu principal...");
-                    break;
-                default:
-                    System.out.println("Opção inválida! Tente novamente.\n");
+                case 1 -> testeDistribuicaoAleatoria();
+                case 2 -> testeGeracao28Pecas();
+                case 3 -> testeIdentificacaoJogadorInicial();
+                case 4 -> testeExibicaoPecas();
+                case 5 -> testeJogadaValida();
+                case 6 -> testeFimDeJogo();
+                case 0 -> System.out.println("Retornando ao menu principal...");
+                default -> System.out.println("Opção inválida! Tente novamente.\n");
             }
 
             if (escolha != 0) {
@@ -67,8 +52,8 @@ public class TestesAceitacao {
         j1.comecar_jogo();
         j2.comecar_jogo();
 
-        String m1 = formatarMao(j1.getMJ1());
-        String m2 = formatarMao(j2.getMJ1());
+        String m1 = formatarMao(j1.getJogador1().getMao());
+        String m2 = formatarMao(j2.getJogador1().getMao());
 
         System.out.println("\nMão do jogador 1 no jogo 1:\n" + m1);
         System.out.println("Mão do jogador 1 no jogo 2:\n" + m2);
@@ -81,16 +66,18 @@ public class TestesAceitacao {
     private static void testeGeracao28Pecas() {
         System.out.println("Teste: Geração do Conjunto de 28 Peças");
         Jogo jogo = new Jogo();
-        jogo.comecar_jogo(); // Necessário para inicializar as peças
+        jogo.comecar_jogo();
 
-        int total = jogo.getMJ1().size() + jogo.getMJ2().size() + jogo.getPecasRestantes().size();
+        int total = jogo.getJogador1().getMao().size() +
+                jogo.getJogador2().getMao().size() +
+                jogo.getPecasRestantes().size();
+
         if (total == 27) {
             System.out.println("PASSOU: Total de peças é 28.\n");
         } else {
-            System.out.println("FALHOU: Total de peças é " + total + " (esperado: 28).\n");
+            System.out.println("FALHOU: Total de peças é " + (total + 1) + " (esperado: 28).\n");
         }
     }
-
 
     private static void testeIdentificacaoJogadorInicial() {
         System.out.println("▶ Teste: Identificação do Jogador Inicial");
@@ -98,11 +85,11 @@ public class TestesAceitacao {
         Jogo jogo = new Jogo();
         jogo.comecar_jogo();
 
-        boolean p1Jogou = jogo.getMJ1().size() == 5;
-        boolean p2Jogou = jogo.getMJ2().size() == 5;
+        boolean p1Jogou = jogo.getJogador1().getMao().size() == 5;
+        boolean p2Jogou = jogo.getJogador2().getMao().size() == 5;
 
-        System.out.println("Mão do Jogador 1: " + jogo.getMJ1().size() + " peças");
-        System.out.println("Mão do Jogador 2: " + jogo.getMJ2().size() + " peças");
+        System.out.println("Mão do Jogador 1: " + jogo.getJogador1().getMao().size() + " peças");
+        System.out.println("Mão do Jogador 2: " + jogo.getJogador2().getMao().size() + " peças");
         System.out.println("Jogador que começou: " + (p1Jogou ? "P1" : p2Jogou ? "P2" : "Não identificado"));
 
         System.out.println("Resultado: " + ((p1Jogou || p2Jogou) ? "Passou" : "Falhou"));
@@ -115,7 +102,7 @@ public class TestesAceitacao {
         Jogo jogo = new Jogo();
         jogo.comecar_jogo();
 
-        String maoFormatada = formatarMao(jogo.getMJ1());
+        String maoFormatada = formatarMao(jogo.getJogador1().getMao());
         System.out.println("Visual da mão formatada:\n" + maoFormatada);
 
         boolean visual = maoFormatada.contains("[") && maoFormatada.contains("|");
@@ -125,8 +112,7 @@ public class TestesAceitacao {
 
     private static void testeJogadaValida() {
         System.out.println("Teste: Verificação de Jogadas Válidas");
-        System.out.println("O objetivo deste teste é tentar jogar uma peça válida.");
-        System.out.println("Você deve tentar jogar uma peça até que seja válida para ver o teste passar.\n");
+        System.out.println("O objetivo deste teste é tentar jogar uma peça válida.\n");
 
         Jogo jogo = new Jogo();
         jogo.comecar_jogo();
@@ -134,7 +120,7 @@ public class TestesAceitacao {
         Scanner input = new Scanner(System.in);
 
         while (true) {
-            ArrayList<Domino> mao = jogo.getMJ1();
+            ArrayList<Domino> mao = jogo.getJogador1().getMao();
             System.out.println("Peças do jogador (P1):");
             for (int i = 0; i < mao.size(); i++) {
                 System.out.print("(" + i + ") = " + mao.get(i) + "  ");
@@ -144,7 +130,7 @@ public class TestesAceitacao {
             System.out.println("Esquerda: [" + jogo.getPAE() + "] | Direita: [" + jogo.getPAD() + "]");
 
             System.out.print("\nDigite o índice da peça para jogar: ");
-            int indice = -1;
+            int indice;
             try {
                 indice = Integer.parseInt(input.nextLine());
             } catch (Exception e) {
@@ -162,8 +148,6 @@ public class TestesAceitacao {
                 break;
             }
 
-            // Se a jogada foi válida, a vez muda (isso acontece na lógica do jogo).
-            // Isso significa que a jogada foi aceita!
             if (!jogo.isVez_jogador()) {
                 System.out.println("Jogada válida realizada com sucesso! Teste passou.\n");
                 break;
@@ -173,47 +157,40 @@ public class TestesAceitacao {
         }
     }
 
-
     private static void testeFimDeJogo() {
         System.out.println("Teste: Fim do Jogo por Vitória");
         System.out.println("Configuração: Peça inicial [0|0], cada jogador com uma peça contendo 0.\n");
 
         Jogo jogo = new Jogo();
 
-        // --- 1. Resetando estado manualmente ---
-        // Limpamos tudo
-        jogo.getMJ1().clear();
-        jogo.getMJ2().clear();
+        // Resetando estado do jogo
+        jogo.getJogador1().getMao().clear();
+        jogo.getJogador2().getMao().clear();
+        jogo.getPecasRestantes().clear();
+        jogo.getPecasMesa().clear();
 
-        // Criamos a peça inicial [0|0]
+        // Peça inicial
         Domino pecaInicial = new Domino(0, 0);
+        jogo.getPecasMesa().add(pecaInicial);
+        jogo.setPAE(0);
+        jogo.setPAD(0);
+        jogo.setVez_jogador(true); // P1 começa
 
-        // Setamos na mesa e nas pontas
-        jogo.pecas_mesa.clear();
-        jogo.pecas_mesa.add(pecaInicial);
-
-        jogo.PAE = 0;
-        jogo.PAD = 0;
-
-        // Setamos a vez do jogador para o P1
-        jogo.vez_jogador = true;
-
-        // --- 2. Damos uma peça válida para cada jogador contendo 0 ---
-        Domino pecaJ1 = new Domino(0, 5);
-        Domino pecaJ2 = new Domino(3, 0);
-
-        jogo.getMJ1().add(pecaJ1);
-        jogo.getMJ2().add(pecaJ2);
+        // Distribuição simulada
+        jogo.getJogador1().getMao().add(new Domino(0, 5));
+        jogo.getJogador2().getMao().add(new Domino(3, 0));
 
         System.out.println("Estado Inicial:");
-        System.out.println("Peça na mesa: [0|0]\n");
-        System.out.println("Jogador 1 tem: " + pecaJ1);
-        System.out.println("Jogador 2 tem: " + pecaJ2);
-        System.out.println("\nVez do jogador: Jogador 1");
+        System.out.println("Peça na mesa: [0|0]");
+        System.out.println("Jogador 1 tem: [0|5]");
+        System.out.println("Jogador 2 tem: [3|0]");
+        System.out.println("Jogador 1 jogará sua única peça...\n");
 
-        // --- 3. Jogador 1 joga sua única peça válida ---
-        System.out.println("\nJogador 1 jogará a peça [0|5] no lado direito...\n");
+        // Jogada final
+        boolean fim = jogo.jogar_peca(0, "d");
 
+        System.out.println("Jogo terminou: " + (fim ? "SIM" : "NÃO"));
+        System.out.println("--------------------------------------------------\n");
     }
 
     private static String formatarMao(ArrayList<Domino> mao) {
@@ -221,7 +198,6 @@ public class TestesAceitacao {
 
         for (int i = 0; i < mao.size(); i++) {
             output.append(String.format("(%d) = %s", i, mao.get(i)));
-
             if ((i + 1) % 3 == 0 || i == mao.size() - 1) {
                 output.append("\n");
             } else {
@@ -232,4 +208,3 @@ public class TestesAceitacao {
         return output.toString();
     }
 }
-
