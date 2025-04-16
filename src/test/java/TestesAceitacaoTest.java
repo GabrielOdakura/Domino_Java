@@ -30,6 +30,8 @@ public class TestesAceitacaoTest {
         );
     }
 
+    //RF05 – Verificação de Jogadas Válidas :
+    //∀ peça(x, y) ∈ Mão(p), ∃ E ∈ {EE, ED} | x = E ∨ y = E ⇒ JogadaVálida(peça(x, y), E)
     @ParameterizedTest
     @MethodSource("jogadas")
     void testJogadaValidaOuInvalida(Jogada jogada) {
@@ -49,6 +51,12 @@ public class TestesAceitacaoTest {
         assertEquals(jogada.esperado(), jogadaValida, "Resultado da jogada diferente do esperado");
     }
 
+    //RF06 – Fim de Jogo por Vitória :
+    //∃ p ∈ Jogadores | Mão(p) = ∅ ⇒ FimDeJogo ∧ Vencedor = p
+    //RF07 – Fim de Jogo por Travamento :
+    //¬∃ p ∈ Jogadores, peça(x, y) ∈ Mão(p) | JogadaVálida(peça(x, y)) ⇒ FimDeJogo ∧ Resultado = "Travado"
+    //RF08 – Exibição do Resultado Final :
+    //FimDeJogo ⇒ Mostrar(ResultadoFinal(Vencedor, Pontuação))
     @ParameterizedTest
     @MethodSource("casosDeFimDeJogo")
     void testFimDeJogoPorVitoria(FimDeJogoCaso caso) {
@@ -86,6 +94,8 @@ public class TestesAceitacaoTest {
         }
     }
 
+    //RF02 – Distribuição Aleatória de Peças :
+    //∀ p ∈ Jogadores ⇒ |Mão(p)| = 7 ∧ DistribuiçãoAleatória(Mão(p))
     @Test
     void testDistribuicaoAleatoriaDasMaos() {
         Jogo j1 = new Jogo();
@@ -100,6 +110,8 @@ public class TestesAceitacaoTest {
         assertNotEquals(mao1, mao2, "As mãos dos dois jogos foram iguais — distribuição não parece aleatória.");
     }
 
+    //RF01 – Geração do Conjunto de Peças :
+    //∀ x, y ∈ ℕ | 0 ≤ x ≤ 6 ∧ 0 ≤ y ≤ 6 ∧ x ≤ y ⇒ peça(x, y) ∈ ConjuntoPeças
     @Test
     void testGeracaoDe28Pecas() {
         Jogo jogo = new Jogo();
@@ -110,6 +122,8 @@ public class TestesAceitacaoTest {
         assertEquals(27, total, "Total de peças deve ser 27 após iniciar o jogo (uma é jogada automaticamente).");
     }
 
+    //RF03 – Identificação do Jogador Inicial :
+    //∀ p ∈ Jogadores, ∃ peça(x, x) ∈ Mão(p) | x = max{a ∈ [0,6] | peça(a, a) ∈ Mão(p)} ⇒ Começa(p)
     @Test
     void testIdentificacaoJogadorInicial() {
         Jogo jogo = new Jogo();
@@ -125,6 +139,8 @@ public class TestesAceitacaoTest {
         assertNotEquals(p1, p2, "Ambos os jogadores têm o mesmo número de peças.");
     }
 
+    //RF04 – Exibição das Peças do Jogador :
+    //∀ p ∈ Jogadores ⇒ Mostrar(Mão(p)) = ListaOrdenada(peça(x, y))
     @Test
     void testExibicaoVisualDaMao() {
         Jogo jogo = new Jogo();

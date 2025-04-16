@@ -45,8 +45,10 @@ public class TestesAceitacao {
         } while (escolha != 0);
     }
 
+    //RF02 – Distribuição Aleatória de Peças :
+    //∀ p ∈ Jogadores ⇒ |Mão(p)| = 7 ∧ DistribuiçãoAleatória(Mão(p))
     private static void testeDistribuicaoAleatoria() {
-        System.out.println("▶ Teste: Distribuição Aleatória");
+        System.out.println("Teste: Distribuição Aleatória");
         Jogo j1 = new Jogo();
         Jogo j2 = new Jogo();
         j1.comecar_jogo();
@@ -63,6 +65,8 @@ public class TestesAceitacao {
         System.out.println("--------------------------------------------------\n");
     }
 
+    //RF01 – Geração do Conjunto de Peças :
+    //∀ x, y ∈ ℕ | 0 ≤ x ≤ 6 ∧ 0 ≤ y ≤ 6 ∧ x ≤ y ⇒ peça(x, y) ∈ ConjuntoPeças
     private static void testeGeracao28Pecas() {
         System.out.println("Teste: Geração do Conjunto de 28 Peças");
         Jogo jogo = new Jogo();
@@ -79,6 +83,8 @@ public class TestesAceitacao {
         }
     }
 
+    //RF03 – Identificação do Jogador Inicial :
+    //∀ p ∈ Jogadores, ∃ peça(x, x) ∈ Mão(p) | x = max{a ∈ [0,6] | peça(a, a) ∈ Mão(p)} ⇒ Começa(p)
     private static void testeIdentificacaoJogadorInicial() {
         System.out.println("▶ Teste: Identificação do Jogador Inicial");
 
@@ -96,6 +102,8 @@ public class TestesAceitacao {
         System.out.println("--------------------------------------------------\n");
     }
 
+    //RF04 – Exibição das Peças do Jogador :
+    //∀ p ∈ Jogadores ⇒ Mostrar(Mão(p)) = ListaOrdenada(peça(x, y))
     private static void testeExibicaoPecas() {
         System.out.println("▶ Teste: Exibição Visual da Mão");
 
@@ -110,6 +118,8 @@ public class TestesAceitacao {
         System.out.println("--------------------------------------------------\n");
     }
 
+    //RF05 – Verificação de Jogadas Válidas :
+    //∀ peça(x, y) ∈ Mão(p), ∃ E ∈ {EE, ED} | x = E ∨ y = E ⇒ JogadaVálida(peça(x, y), E)
     private static void testeJogadaValida() {
         System.out.println("Teste: Verificação de Jogadas Válidas");
         System.out.println("O objetivo deste teste é tentar jogar uma peça válida.\n");
@@ -157,6 +167,12 @@ public class TestesAceitacao {
         }
     }
 
+    //RF06 – Fim de Jogo por Vitória :
+    //∃ p ∈ Jogadores | Mão(p) = ∅ ⇒ FimDeJogo ∧ Vencedor = p
+    //RF07 – Fim de Jogo por Travamento :
+    //¬∃ p ∈ Jogadores, peça(x, y) ∈ Mão(p) | JogadaVálida(peça(x, y)) ⇒ FimDeJogo ∧ Resultado = "Travado"
+    //RF08 – Exibição do Resultado Final :
+    //FimDeJogo ⇒ Mostrar(ResultadoFinal(Vencedor, Pontuação))
     private static void testeFimDeJogo() {
         System.out.println("Teste: Fim do Jogo por Vitória");
         System.out.println("Configuração: Peça inicial [0|0], cada jogador com uma peça contendo 0.\n");
