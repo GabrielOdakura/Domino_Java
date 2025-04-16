@@ -17,6 +17,10 @@ public class Jogador {
         return mao;
     }
 
+    public void setMao(ArrayList<Domino> mao_nova){
+        this.mao = mao_nova;
+    }
+
     public void adicionarPeca(Domino peca) {
         mao.add(peca);
     }

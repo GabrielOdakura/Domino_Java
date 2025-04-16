@@ -107,6 +107,8 @@ public class Jogo {
     public boolean jogar_peca(int id_peca, String lado) {
         Jogador jogadorAtual = vez_jogador ? jogador1 : jogador2;
 
+        System.out.println(jogadorAtual.getMao());
+
         if (id_peca < 0 || id_peca >= jogadorAtual.getMao().size()) {
             System.out.println("Índice inválido! Escolha uma peça válida.");
             return false;
