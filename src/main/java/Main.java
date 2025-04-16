@@ -60,7 +60,9 @@ public class Main {
         while(opcao != 0){
             boolean vez_jogador = jogo_atual.isVez_jogador();
             // se for true pega a mao do P1 se for false pega a do P2
-            ArrayList<Domino> mao = vez_jogador ? jogo_atual.getMJ1() : jogo_atual.getMJ2();
+            ArrayList<Domino> mao = vez_jogador
+                    ? jogo_atual.getJogador1().getMao()
+                    : jogo_atual.getJogador2().getMao();
             String mao_formatada = formatarMao(mao);
             System.out.print(String.format("""
                     Menu de Jogo
