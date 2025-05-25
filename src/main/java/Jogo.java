@@ -30,6 +30,14 @@ public class Jogo {
     // 0 = não iniciada | 1 = em andamento | 2 = finalizado | 3 = empate
     private int estado_partida = 0;
 
+    // índice 0 corresponde a jogadasValidas P1 e 1 a P2
+    private int[] jogadasValidas = new int[2];
+
+    // tempo médio de jogada
+    private long tempoInicioJogada;
+    private long tempoTotalP1 = 0;
+    private long tempoTotalP2 = 0;
+
     public Jogo() {
         // inicialização das peças (28 peças de 0 a 6)
         for (int i = 0; i <= 6; i++) {
@@ -63,6 +71,9 @@ public class Jogo {
         jogador1.getMao().remove(remover_peca);
         jogador2.getMao().remove(remover_peca);
         pecas_restantes.remove(remover_peca);
+
+        //comeca o calculo de tempo
+        tempoInicioJogada = System.currentTimeMillis();
     }
 
     private Domino determinarQuemComeca() {
@@ -145,7 +156,9 @@ public class Jogo {
         if (jogada_valida) {
             jogadorAtual.getMao().remove(id_peca);
             ja_comprou = false;
+            finalizarTempoJogada();
             vez_jogador = !vez_jogador;
+            iniciarTempoJogada();
             System.out.println("Peça jogada com sucesso!\n");
         } else {
             System.out.println("Jogada inválida! Escolha outra peça ou compre uma.\n");
@@ -169,11 +182,15 @@ public class Jogo {
         } else {
             System.out.println("\nPeça já comprada nesse turno!");
         }
+        finalizarTempoJogada();
+        iniciarTempoJogada();
     }
 
     // jogador decide passar sua vez
     public void passar_vez() {
+        finalizarTempoJogada();
         vez_jogador = !vez_jogador;
+        iniciarTempoJogada();
         ja_comprou = false;
     }
 
@@ -205,6 +222,7 @@ public class Jogo {
                 estado_partida = 3;
                 System.out.println("É um empate! Ambos jogadores têm " + somaP1 + " pontos.");
             }
+            mostrarTempos();
             return true;
         }
 
@@ -225,6 +243,90 @@ public class Jogo {
     // se a peça pode ser inserida em um dos dois lados do tabuleiro, retorna true
     private boolean podeJogar(Domino d) {
         return (d.get_d() == PAD || d.get_e() == PAE || d.get_d() == PAE || d.get_e() == PAD);
+    }
+
+    private void contarJogadasValidas(){
+        int i = 0;
+        if (vez_jogador){
+            for (Domino d : jogador1.getMao()){
+                if (podeJogar(d)) {
+                    i++;
+                }
+            }
+            jogadasValidas[0] = i;
+        }else{
+            for (Domino d : jogador2.getMao()){
+                if (podeJogar(d)) {
+                    i++;
+                }
+            }
+            jogadasValidas[1] = i;
+        }
+    }
+
+    public int retornarValidas(){
+        contarJogadasValidas();
+        if (vez_jogador) return jogadasValidas[0];
+        else return jogadasValidas[1];
+    }
+
+    private void finalizarTempoJogada() {
+        long tempoFim = System.currentTimeMillis();
+        long duracao = tempoFim - tempoInicioJogada;
+        if (vez_jogador) {
+            tempoTotalP1 += duracao;
+        } else {
+            tempoTotalP2 += duracao;
+        }
+    }
+
+    private void iniciarTempoJogada() {
+        tempoInicioJogada = System.currentTimeMillis();
+    }
+
+    public void mostrarTempos() {
+        System.out.println("Tempo total do Jogador 1: " + tempoTotalP1 + " ms");
+        System.out.println("Tempo total do Jogador 2: " + tempoTotalP2 + " ms");
+    }
+
+    // IA tenta jogar
+    public void turnoComputador() {
+        if (!vez_jogador) {
+            Jogador computador = jogador2;
+            boolean jogou = false;
+
+            // Tenta jogar uma peça
+            for (int i = 0; i < computador.getMao().size(); i++) {
+                Domino peca = computador.getPeca(i);
+                if (podeJogar(peca)) {
+                    // Decide automaticamente o lado (esquerda ou direita)
+                    if (peca.get_e() == PAD || peca.get_d() == PAD) {
+                        System.out.println("Computador jogou na direita: " + peca);
+                        jogar_peca(i, "d");
+                    } else {
+                        System.out.println("Computador jogou na esquerda: " + peca);
+                        jogar_peca(i, "e");
+                    }
+                    jogou = true;
+                    break;
+                }
+            }
+
+            // Se não conseguiu jogar, tenta comprar uma peça
+            if (!jogou && !pecas_restantes.isEmpty()) {
+                System.out.println("Computador comprou uma peça.");
+                comprar_peca();
+                // Após comprar, tenta jogar de novo
+                turnoComputador();
+                return;
+            }
+
+            // Se não conseguiu jogar nem após comprar, passa a vez
+            if (!jogou) {
+                System.out.println("Computador passou a vez.");
+                passar_vez();
+            }
+        }
     }
 
     // Getters úteis

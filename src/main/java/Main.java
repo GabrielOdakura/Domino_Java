@@ -10,7 +10,7 @@ public class Main {
                     Bem vindo ao Dominó Virtual!
                     1 - Começar Jogo
                     2 - Regras
-                    3 - Testes de Aceitação
+                    3 - Jogar com IA
                     0 - Sair do Jogo
                     Digite a opção desejada:
                     """);
@@ -27,8 +27,8 @@ public class Main {
                         input.nextLine();
                     }
                     case 3 -> {
-                        //TestesAceitacao.executarTestesDeAceitacao();
-                        input.nextLine();  // espera o usuário apertar enter
+                        System.out.println("\n\n");
+                        menu_jogo_PVE();
                     }
                     case 0 -> {
                         System.out.println("Deseja sair? Digite 's' para confirmar: ");
@@ -116,6 +116,86 @@ public class Main {
                 opcao = -1;
             }
             if (encerrar) break;
+        }
+    }
+
+    private static void menu_jogo_PVE() {
+        Jogo jogo_atual = new Jogo();
+        jogo_atual.comecar_jogo();
+
+        int opcao = -1;
+        Scanner input = new Scanner(System.in);
+        boolean encerrar = false;
+
+        while (opcao != 0 && !encerrar) {
+            boolean vez_jogador = jogo_atual.isVez_jogador();
+
+            if (vez_jogador) {
+                // Turno do Jogador Humano
+                ArrayList<Domino> mao = jogo_atual.getJogador1().getMao();
+                String mao_formatada = formatarMao(mao);
+                System.out.print(String.format("""
+                    Menu de Jogo (PVE)
+                    Vez do jogador : P1
+                    Lado esquerdo : [%d] | Lado Direito : [%d]
+                    Suas Peças:
+                    %s
+                    Opções Disponíveis
+                    1 - Jogar Peça
+                    2 - Comprar Peça
+                    3 - Passar Vez
+                    0 - Sair para o menu principal
+                    Digite a opção desejada:
+                    """, jogo_atual.getPAE(), jogo_atual.getPAD(), mao_formatada));
+                String opcao_escolhida = input.nextLine();
+                try {
+                    opcao = Integer.parseInt(opcao_escolhida);
+                    switch (opcao) {
+                        case 1 -> {
+                            System.out.println("Digite o índice da peça para jogar:");
+                            String escolha_peca = input.nextLine();
+                            int peca_escolhida = Integer.parseInt(escolha_peca);
+
+                            System.out.println("Digite o lado para jogar ('e' ou 'd'):");
+                            String escolha_lado = input.nextLine();
+
+                            if (!(escolha_lado.equals("e") || escolha_lado.equals("d"))) throw new Exception();
+
+                            encerrar = jogo_atual.jogar_peca(peca_escolhida, escolha_lado);
+                        }
+                        case 2 -> jogo_atual.comprar_peca();
+                        case 3 -> jogo_atual.passar_vez();
+                        case 0 -> {
+                            System.out.println("Deseja sair? Digite 's' para confirmar: ");
+                            String confirmar = input.nextLine();
+                            if (confirmar.equalsIgnoreCase("s")) {
+                                System.out.println("Voltando ao menu principal!");
+                                opcao = 0;
+                            } else {
+                                opcao = -1;
+                            }
+                        }
+                        default -> throw new Exception();
+                    }
+                } catch (Exception e) {
+                    System.out.println("Opção inválida! Tente novamente.\n");
+                    opcao = -1;
+                }
+            } else {
+                // Turno do Computador
+                System.out.println("\n\n====== TURNO DO COMPUTADOR ======");
+                try {
+                    Thread.sleep(500); // pausa para dar um efeito
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                jogo_atual.turnoComputador();
+            }
+
+            if (encerrar) {
+                System.out.println("O jogo terminou!");
+                break;
+            }
         }
     }
 
